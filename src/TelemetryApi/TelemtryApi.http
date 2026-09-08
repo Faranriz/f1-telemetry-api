@@ -1,6 +1,57 @@
-@TelemtryApi_HostAddress = http://localhost:5010
+@host = http://localhost:5010
 
-GET {{TelemtryApi_HostAddress}}/weatherforecast/
-Accept: application/json
+### Health check
+GET {{host}}/health
 
-###
+### All laps
+GET {{host}}/api/laps
+
+### Filter by driver
+GET {{host}}/api/laps?driver=HAM
+
+### Filter by circuit
+GET {{host}}/api/laps?circuit=Monza
+
+### Fastest lap overall
+GET {{host}}/api/laps/fastest
+
+### Fastest lap at Silverstone
+GET {{host}}/api/laps/fastest?circuit=Silverstone
+
+### Single lap
+GET {{host}}/api/laps/1
+
+### Lap that does not exist -> 404
+GET {{host}}/api/laps/9999
+
+### Driver stats
+GET {{host}}/api/drivers/HAM/stats
+
+### Create a lap
+POST {{host}}/api/laps
+Content-Type: application/json
+
+{
+  "driver": "ANT",
+  "circuit": "Silverstone",
+  "lapNumber": 1,
+  "lapTimeSeconds": 87.512,
+  "topSpeedKph": 316.9,
+  "tyreCompound": "Soft"
+}
+
+### Invalid lap -> 400 with validation details
+POST {{host}}/api/laps
+Content-Type: application/json
+
+{
+  "driver": "",
+  "circuit": "Monza",
+  "lapNumber": -5,
+  "lapTimeSeconds": 0,
+  "topSpeedKph": 900,
+  "tyreCompound": "Soft"
+}
+
+### Delete a lap
+DELETE {{host}}/api/laps/1

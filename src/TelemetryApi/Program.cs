@@ -1,5 +1,6 @@
-using TelemetryApi.Endpoints;
 using TelemetryApi.Services;
+using TelemetryApi.Endpoints;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options => 
+    {
+        options.Title = "F1 Telemetry API";
+    });
 }
 
 app.UseHttpsRedirection();
