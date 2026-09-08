@@ -54,3 +54,6 @@ This keeps the endpoints thin and makes the logic testable in isolation — the 
 
 Endpoints declare their responses via `Results<Ok<T>, NotFound>`, so the OpenAPI
 document is generated from the type signatures rather than hand-maintained attributes.
+
+<img width="1509" height="860" alt="Screenshot 2026-09-08 at 21 15 58" src="https://github.com/user-attachments/assets/8fd2d8fb-8809-408a-a35c-3bf7216a1193" />
+<img width="1509" height="860" alt="Screenshot 2026-09-08 at 21 15 32" src="https://github.com/user-attachments/assets/bcf8520f-ed89-4e1a-aeee-806a4f4dcaf4" />
