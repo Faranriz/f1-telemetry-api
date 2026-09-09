@@ -31,7 +31,7 @@ public class InMemoryLapService : ILapService{
         lock (_gate){
             var lap = new Lap(
                 Id: _nextId++,
-                Driver: request.Driver.ToUpperInvariant(),
+                Driver: request.Driver,
                 Circuit: request.Circuit,
                 LapNumber: request.LapNumber,
                 LapTimeSeconds: request.LapTimeSeconds,
