@@ -16,6 +16,8 @@ if (app.Environment.IsDevelopment())
     {
         options.Title = "F1 Telemetry API";
     });
+    app.UseHttpsRedirection();
+    SeedData.Populate(app.Services.GetRequiredService<ILapService>());
 }
 
 app.UseHttpsRedirection();
@@ -27,3 +29,6 @@ app.MapGet("/health", () => TypedResults.Ok(new { status = "healthy" }))
 app.MapLapEndpoints();
 
 app.Run();
+
+// exposes auto-generated Program class so integration test project can reference it
+public partial class Program { }

@@ -7,15 +7,6 @@ public class InMemoryLapService : ILapService{
     private readonly Lock _gate = new();
     private int _nextId = 1;
 
-    public InMemoryLapService(){
-        // Seeing data so API isn't empty on first run
-        Add(new CreateLapRequest("HAM", "Silverstone", 1, 88.412, 312.4, "Soft"));
-        Add(new CreateLapRequest("HAM", "Silverstone", 2, 87.905, 315.1, "Soft"));
-        Add(new CreateLapRequest("RUS", "Silverstone", 1, 88.740, 310.8, "Medium"));
-        Add(new CreateLapRequest("RUS", "Silverstone", 2, 88.201, 313.6, "Medium"));
-        Add(new CreateLapRequest("HAM", "Monza", 1, 82.115, 341.2, "Hard"));
-    }
-
     public IReadOnlyList<Lap> GetAll(string? driver = null, string? circuit = null){
         lock(_gate){
             return _laps
