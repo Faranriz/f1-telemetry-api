@@ -89,4 +89,15 @@ public class InMemoryLapService : ILapService
         }
     }
 
+    public Lap? GetSlowestLap(string? circuit = null)
+    {
+        lock (_gate)
+        {
+            return _laps
+                .Where(l => circuit is null ||
+                            l.Circuit.Equals(circuit, StringComparison.OrdinalIgnoreCase))
+                .MaxBy(l => l.LapTimeSeconds);
+        }
+    }
+
 }
