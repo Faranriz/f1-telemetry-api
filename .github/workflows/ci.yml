@@ -11,7 +11,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
   #if pushed to github twice in quick succession, this cancels the first run
-  
+
 jobs:
   build-and-test: #jobs internal ID chosen by me
     name: Built and test #again, this is the human readable label in UI
@@ -63,6 +63,48 @@ jobs:
           path: ./TestResults
           retention-days: 7
         #publish test results on fails. 'if: always()' forces publishing of test results even if earlier tests fail, which by default causes all steps after to be skipped
+  
+  #everything above was CI- testing code
+  #now everything below will be the CD half, testing readiness for deployment
+  publish:
+    name: Publish artifact
+    runs-on: ubuntu-latest
+    needs: build-and-test #only runs if CI tests passed, without this you could end up pblishing something that fails
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' #only publish on a direct push to main
 
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
 
-      
+      - name: Set up the .NET 10 SDK
+        uses: actions/setup-dotnet@v6 #not redundant, its a different job so a different VM whihc starts from scratch
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish
+        run: >
+          dotnet publish src/TelemetryApi/TelemetryApi.csproj
+          --configuration Release
+          --output ./publish
+
+      - name: Upload application package
+        uses: actions/upload-artifact@v4
+        with:
+          name: telemetry-api-${{ github.sha }} #commit hash, so each commit is traceable, so in real deployment, should a bug arise you know it came from which version and where frome etc.
+          path: ./publish
+          retention-days: 30
+    
+ # deploy:
+ #   needs: publish
+ #   runs-on: ubuntu-latest
+ #   environment: production        #enables manual approval before job deploys, which is the line between Continuous Delivery and Continuous Deployment
+ #   steps:
+ #     - uses: actions/download-artifact@v4
+ #       with:
+ #         name: telemetry-api-${{ github.sha }}
+ #     - name: Deploy
+ #       run: ./deploy.sh
+ #       env:
+ #         API_KEY: ${{ secrets.DEPLOY_API_KEY }} #reads an encrypted value from setting in github
+
+ #the above is the deployment step, but will not use as currently have no where to deploy set up 
