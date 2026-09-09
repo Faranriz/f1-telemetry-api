@@ -2,13 +2,16 @@ using TelemetryApi.Models;
 
 namespace TelemetryApi.Services;
 
-public class InMemoryLapService : ILapService{
+public class InMemoryLapService : ILapService
+{
     private readonly List<Lap> _laps = [];
     private readonly Lock _gate = new();
     private int _nextId = 1;
 
-    public IReadOnlyList<Lap> GetAll(string? driver = null, string? circuit = null){
-        lock(_gate){
+    public IReadOnlyList<Lap> GetAll(string? driver = null, string? circuit = null)
+    {
+        lock (_gate)
+        {
             return _laps
             .Where(l => driver is null ||
                         l.Driver.Equals(driver, StringComparison.OrdinalIgnoreCase))
@@ -21,14 +24,18 @@ public class InMemoryLapService : ILapService{
         }
     }
 
-    public Lap? GetById(int id){
-        lock (_gate){
+    public Lap? GetById(int id)
+    {
+        lock (_gate)
+        {
             return _laps.FirstOrDefault(l => l.Id == id);
         }
     }
 
-    public Lap Add(CreateLapRequest request){
-        lock (_gate){
+    public Lap Add(CreateLapRequest request)
+    {
+        lock (_gate)
+        {
             var lap = new Lap(
                 Id: _nextId++,
                 Driver: request.Driver.ToUpperInvariant(),
@@ -43,15 +50,19 @@ public class InMemoryLapService : ILapService{
         }
     }
 
-    public bool Delete(int id){
-        lock (_gate){
+    public bool Delete(int id)
+    {
+        lock (_gate)
+        {
             var lap = _laps.FirstOrDefault(l => l.Id == id);
             return lap is not null && _laps.Remove(lap);
         }
     }
 
-    public Lap? GetFastestLap(string? circuit = null){
-        lock (_gate){
+    public Lap? GetFastestLap(string? circuit = null)
+    {
+        lock (_gate)
+        {
             return _laps
                 .Where(l => circuit is null ||
                             l.Circuit.Equals(circuit, StringComparison.OrdinalIgnoreCase))
@@ -59,8 +70,10 @@ public class InMemoryLapService : ILapService{
         }
     }
 
-    public DriverStats? GetDriverStats(string driver){
-        lock (_gate){
+    public DriverStats? GetDriverStats(string driver)
+    {
+        lock (_gate)
+        {
             var laps = _laps
                 .Where(l => l.Driver.Equals(driver, StringComparison.OrdinalIgnoreCase))
                 .ToList();

@@ -24,6 +24,9 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore #download NuGet packages. When run from repo root, it finds .sln and restores every project, including tests
 
+      - name: Verifiy formatting
+        run: dotnet format --verify-no-changes --verbosity diagnostic
+        
       - name: Build
         run: dotnet build --configuration Release --no-restore
                           #--configuration Release: build optimised without debug symbols, tests what is shipped, not a debugger

@@ -12,7 +12,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference(options => 
+    app.MapScalarApiReference(options =>
     {
         options.Title = "F1 Telemetry API";
     });

@@ -4,7 +4,8 @@ using Xunit;
 
 namespace TelemetryApi.Tests;
 
-public class LapServiceTests{
+public class LapServiceTests
+{
 
     // A helper so each test starts from a clean and known state.
     private static InMemoryLapService CreateService() => new();
@@ -19,7 +20,8 @@ public class LapServiceTests{
         => new(driver, circuit, lapNumber, lapTime, topSpeed, tyre);
 
     [Fact]
-    public void GetAll_returns_empty_when_no_laps_recorded(){
+    public void GetAll_returns_empty_when_no_laps_recorded()
+    {
         // Arrange
         var service = CreateService();
 
@@ -31,7 +33,8 @@ public class LapServiceTests{
     }
 
     [Fact]
-    public void Add_assigns_sequential_ids_starting_at_one(){
+    public void Add_assigns_sequential_ids_starting_at_one()
+    {
         var service = CreateService();
 
         var first = service.Add(ALap());
@@ -42,7 +45,8 @@ public class LapServiceTests{
     }
 
     [Fact]
-    public void Add_normalises_driver_code_to_uppercase(){
+    public void Add_normalises_driver_code_to_uppercase()
+    {
         var service = CreateService();
 
         var lap = service.Add(ALap(driver: "ham"));
@@ -51,7 +55,8 @@ public class LapServiceTests{
     }
 
     [Fact]
-    public void GetById_returns_null_for_unknown_id(){
+    public void GetById_returns_null_for_unknown_id()
+    {
         var service = CreateService();
 
         var lap = service.GetById(999);
@@ -60,7 +65,8 @@ public class LapServiceTests{
     }
 
     [Fact]
-    public void GetAll_filters_by_driver_case_insensitively(){
+    public void GetAll_filters_by_driver_case_insensitively()
+    {
         var service = CreateService();
         service.Add(ALap(driver: "HAM"));
         service.Add(ALap(driver: "RUS"));
@@ -72,7 +78,8 @@ public class LapServiceTests{
     }
 
     [Fact]
-    public void GetFastestLap_returns_the_lowest_lap_time(){
+    public void GetFastestLap_returns_the_lowest_lap_time()
+    {
         var service = CreateService();
         service.Add(ALap(lapTime: 91.5));
         service.Add(ALap(lapTime: 88.2, lapNumber: 2));
@@ -85,7 +92,8 @@ public class LapServiceTests{
     }
 
     [Fact]
-    public void GetFastestLap_respects_the_circuit_filter(){
+    public void GetFastestLap_respects_the_circuit_filter()
+    {
         var service = CreateService();
         service.Add(ALap(circuit: "Monza", lapTime: 82.0));
         service.Add(ALap(circuit: "Silverstone", lapTime: 88.0));
@@ -98,14 +106,16 @@ public class LapServiceTests{
     }
 
     [Fact]
-    public void GetFastestLap_returns_null_when_there_are_no_laps(){
+    public void GetFastestLap_returns_null_when_there_are_no_laps()
+    {
         var service = CreateService();
 
         Assert.Null(service.GetFastestLap());
     }
 
     [Fact]
-    public void GetDriverStats_computes_count_best_average_and_top_speed(){
+    public void GetDriverStats_computes_count_best_average_and_top_speed()
+    {
         var service = CreateService();
         service.Add(ALap(driver: "HAM", lapTime: 90.0, topSpeed: 300.0));
         service.Add(ALap(driver: "HAM", lapTime: 88.0, topSpeed: 310.0, lapNumber: 2));
@@ -121,7 +131,8 @@ public class LapServiceTests{
     }
 
     [Fact]
-    public void GetDriverStats_returns_null_for_a_driver_with_no_laps(){
+    public void GetDriverStats_returns_null_for_a_driver_with_no_laps()
+    {
         var service = CreateService();
         service.Add(ALap(driver: "HAM"));
 
@@ -129,7 +140,8 @@ public class LapServiceTests{
     }
 
     [Fact]
-    public void Delete_removes_the_lap_and_reports_success(){
+    public void Delete_removes_the_lap_and_reports_success()
+    {
         var service = CreateService();
         var lap = service.Add(ALap());
 
@@ -140,7 +152,8 @@ public class LapServiceTests{
     }
 
     [Fact]
-    public void Delete_returns_false_for_unknown_id(){
+    public void Delete_returns_false_for_unknown_id()
+    {
         var service = CreateService();
 
         Assert.False(service.Delete(999));

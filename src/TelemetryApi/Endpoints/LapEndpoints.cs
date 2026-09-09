@@ -5,24 +5,27 @@ using TelemetryApi.Services;
 
 namespace TelemetryApi.Endpoints;
 
-public static class LapEndpoints{
+public static class LapEndpoints
+{
 
-    public static IEndpointRouteBuilder MapLapEndpoints(this IEndpointRouteBuilder app){
+    public static IEndpointRouteBuilder MapLapEndpoints(this IEndpointRouteBuilder app)
+    {
 
         var group = app.MapGroup("/api/laps")
                         .WithTags("Laps");
-        
+
         group.MapGet("/", (ILapService service, string? driver, string? circuit) =>
                 TypedResults.Ok(service.GetAll(driver, circuit)))
             .WithName("GetLaps")
             .WithSummary("List laps, optionally filtered by driver and/or circuit.");
 
-        group.MapGet("/fastest", Results<Ok<Lap>, NotFound> (ILapService service, string? circuit) =>{
-                var lap = service.GetFastestLap(circuit);
-                return lap is null
-                    ? TypedResults.NotFound()
-                    : TypedResults.Ok(lap);
-            })
+        group.MapGet("/fastest", Results<Ok<Lap>, NotFound> (ILapService service, string? circuit) =>
+        {
+            var lap = service.GetFastestLap(circuit);
+            return lap is null
+                ? TypedResults.NotFound()
+                : TypedResults.Ok(lap);
+        })
             .WithName("GetFastestLap")
             .WithSummary("Return the fastest recorded lap, optionally within one circuit.");
 
@@ -70,7 +73,8 @@ public static class LapEndpoints{
         return app;
     }
 
-    private static Dictionary<string, string[]> Validate(CreateLapRequest r){
+    private static Dictionary<string, string[]> Validate(CreateLapRequest r)
+    {
 
         var errors = new Dictionary<string, string[]>();
 
