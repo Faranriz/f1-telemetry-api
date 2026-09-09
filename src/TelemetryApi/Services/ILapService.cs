@@ -10,4 +10,5 @@ public interface ILapService
     bool Delete(int id);
     Lap? GetFastestLap(string? circuit = null);
     DriverStats? GetDriverStats(string driver);
+    Lap? GetSlowestLap(string? circuit = null);
 }

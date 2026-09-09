@@ -175,4 +175,17 @@ public class LapServiceTests
 
         Assert.Equal(expected, laps.Count);
     }
+
+    [Fact]
+    public void GetSlowestLap_returns_the_highest_lap_time()
+    {
+        var service = CreateService();
+        service.Add(ALap(lapTime: 91.5));
+        service.Add(ALap(lapTime: 88.2, lapNumber: 2));
+
+        var slowest = service.GetSlowestLap();
+
+        Assert.NotNull(slowest);
+        Assert.Equal(91.5, slowest.LapTimeSeconds);
+    }
 }

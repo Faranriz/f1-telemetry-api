@@ -59,6 +59,13 @@ public static class LapEndpoints
                     : TypedResults.NotFound())
                 .WithName("DeleteLap");
 
+        group.MapGet("/slowest", Results<Ok<Lap>, NotFound> (ILapService service, string? circuit) =>
+        {
+            var lap = service.GetSlowestLap(circuit);
+            return lap is null ? TypedResults.NotFound() : TypedResults.Ok(lap);
+        })
+        .WithName("GetSlowestLap");
+
         app.MapGet("/api/drivers/{driver}/stats",
                 Results<Ok<DriverStats>, NotFound> (ILapService service, string driver) =>
             {
