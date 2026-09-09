@@ -1,3 +1,5 @@
+[![CI](https://github.com/Faranriz/f1-telemetry-api/actions/workflows/ci.yml/badge.svg)](https://github.com/Faranriz/f1-telemetry-api/actions/workflows/ci.yml)
+
 # F1 Telemetry API
 
 A REST API for recording and querying Formula 1 lap telemetry, built with ASP.NET Core
