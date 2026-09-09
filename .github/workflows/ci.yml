@@ -7,10 +7,16 @@ on: # events(nested below) that trigger this workflow to run
     branches: [ main ] #run when PR targeting main is opened/updated so checks before code reaches main, to prevent breakage rather than just reporting it 
   workflow_dispatch: #adds "run workflow" button in UI for manual testing without needing commits
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  #if pushed to github twice in quick succession, this cancels the first run
+  
 jobs:
   build-and-test: #jobs internal ID chosen by me
     name: Built and test #again, this is the human readable label in UI
     runs-on: ubuntu-latest #requests a fresh Ubuntu VM. alternatives: 'windows-latest' and 'macos-latest'. Ubuntu default usually as its faster/cheaper
+    timeout-minutes: 10 #kills run after 10 minutes
 
     steps: #lists of intructions that run top to bottom on Ubuntu VM
       - name: Check out the repository
@@ -21,17 +27,42 @@ jobs:
         with:
           dotnet-version: '10.0.x' #install the latest (.x) .NET 10 SDK 
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+        #restoring packages from cache makes test runs much faster
+        #key is unique fingerprint and computes a hash of all project files
+        #so when dependencies are not changed, packages are restored from cache efficiently
+
       - name: Restore dependencies
         run: dotnet restore #download NuGet packages. When run from repo root, it finds .sln and restores every project, including tests
 
       - name: Verifiy formatting
         run: dotnet format --verify-no-changes --verbosity diagnostic
-        
+
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --configuration Release --no-restore -warnaserror
                           #--configuration Release: build optimised without debug symbols, tests what is shipped, not a debugger
                                                   #--no-restore: we already restored in previous step above, saves time
       - name: Run tests
-        run: dotnet test --configuration Release --no-build --verbosity normal
-                          #--no-build: resuse output of previous step, rather than recompiling
-                                      #--verbosity normal: give enough detail to see which tests ran
+        run: >
+          dotnet test --configuration Release --no-build
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory ./TestResults
+                                                #--no-build: resuse output of previous step, rather than recompiling
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: ./TestResults
+          retention-days: 7
+        #publish test results on fails. 'if: always()' forces publishing of test results even if earlier tests fail, which by default causes all steps after to be skipped
+
+
+      
